@@ -12,6 +12,8 @@ import com.pavaneli.course.entities.User;
 import com.pavaneli.course.repositories.UserRepository;
 import com.pavaneli.course.services.exceptions.DatabaseException;
 import com.pavaneli.course.services.exceptions.ResorceNotFoundException;
+
+import jakarta.persistence.EntityNotFoundException;
 @Service
 public class UserService {
 	@Autowired
@@ -39,9 +41,15 @@ public class UserService {
 		}
 	}
 	public User update(Long id, User obj) {
-		User entity = repository.getReferenceById(id);
-		updateData(entity, obj);
-		return repository.save(entity);
+		try {
+			User entity = repository.getReferenceById(id);
+			updateData(entity, obj);
+			return repository.save(entity);
+		}catch(EntityNotFoundException e){
+			throw new ResorceNotFoundException(id);
+			
+		}
+		
 	}
 
 	private void updateData(User entity, User obj) {
